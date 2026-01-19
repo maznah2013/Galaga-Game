@@ -22,3 +22,75 @@ for i in range(8):
     enemy.x=random.randint(0, WIDTH-80)
     enemy.y=random.randint(-100, 0)
     enemies.append(enemy)
+
+#BULLETS
+def on_key_down(key):
+    if key==keys.SPACE:
+        #CREATE A NEW BULLET
+        bullet=Actor("bullet")
+        bullet.x=ship.x
+        bullet.y=ship.y-50
+        bullets.append(bullet)
+
+#SCORE DISPLAY
+def draw_score():    
+    screen.draw.text(f"SCORE: {score}",(50,30),color="white")
+    screen.draw.text(f"LIVES: {lives}", (50,60), color="white")
+
+#FUNCTION TO DRAW GAME STATE
+def draw():
+    if lives>0:
+        screen.clear()
+        screen.fill("#2F6690")
+        ship.draw()
+        for enemy in enemies:
+            enemy.draw()
+        for bullet in bullets:
+            bullet.draw()    
+        draw_score()
+    else:
+        game_over_screen()
+
+#FUNCTION TO UPDATE GAME STATE
+def update():
+    global lives, score
+
+    #MOVE THE SHIP LEFT AND RIGHT
+    if keyboard.left:
+        ship.x -=speed
+        if ship.x<=0:
+            ship.x=0
+
+    elif keyboard.right:
+        ship.x +=speed
+        if ship.x>=WIDTH:
+            ship.x=WIDTH
+    
+    #MOVE THE BULLETS
+    for bullet in bullets:
+        if bullet.y<=0:
+            bullets.remove(bullet)
+        else:
+            bullet.y -=10
+    
+    #MOVE THE ENEMIES
+    for enemy in enemies:
+        enemy.y +=5
+        if enemy.y>HEIGHT:
+            enemy.x=random.randint(0,WIDTH-80)
+            enemy.y=random.randint(-100, 0) 
+        
+        #COLLISION WITH BULLETS
+        for bullet in bullets:
+            if enemy.colliderect(bullet): 
+                score +=100
+                sounds.eep.play()
+                bullets.remove(bullet)
+                enemies.remove(enemy)
+                
+
+def game_over_screen():
+    pass
+
+
+pgzrun.go()
