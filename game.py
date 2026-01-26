@@ -5,6 +5,9 @@ WIDTH=1200
 HEIGHT=600
 TITLE="THE GALAGA GAME"
 
+CENTER_X=WIDTH//2
+CENTER_Y=HEIGHT//2
+
 score=0
 lives=3
 is_game_over=False
@@ -87,10 +90,51 @@ def update():
                 sounds.eep.play()
                 bullets.remove(bullet)
                 enemies.remove(enemy)
+    
+        #COLLISION WITH SHIP
+        if enemy.colliderect(ship):
+            lives-=1
+            enemies.remove(enemy)
+
+            if lives==0:
+                game_over()
+    
+    #CONTINUE CREATING ENEMIES
+    if len(enemies)<8:
+        enemy=Actor("bug")
+        enemy.x=random.randint(0, WIDTH-80)
+        enemy.y=random.randint(-100, 0)
+        enemies.append(enemy)
+
+
+def game_over():
+    global is_game_over
+    is_game_over=True
                 
 
 def game_over_screen():
-    pass
+    screen.clear()
+    screen.fill("#140D4F")
+    screen.draw.text("GAME OVER!", (CENTER_X-200, CENTER_Y), fontsize=60, color="white")
+    screen.draw.text(f"score:{score}", (CENTER_X-200,CENTER_Y+50), fontsize=40, color="white")
+    screen.draw.text("Press the space bar to play again!", (CENTER_X-200, CENTER_Y+100), fontsize=40, color="white")
+    
+    if keyboard.SPACE:
+        restart_game()
+
+
+#FUNCTION TO RESTART THE GAME
+def restart_game():
+    global lives, score, enemies, bullets
+    lives=3
+    score=0
+    enemies=[]
+    bullets=[]
+    for i in range(8):
+        enemy=Actor("bug")
+        enemy.x=random.randint(0, WIDTH-80)
+        enemy.y=random.randint(-100, 0)
+        enemies.append(enemy)
 
 
 pgzrun.go()
